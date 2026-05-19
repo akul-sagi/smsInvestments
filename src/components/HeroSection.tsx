@@ -35,8 +35,7 @@ export function HeroSection({ scrollProgress, onJump, prefersReducedMotion }: He
         <p className="eyebrow">London capital markets office</p>
         <h1 id="landing-title">SMS Investments</h1>
         <p className="hero-copy">
-          A single family office deploying proprietary capital through disciplined momentum strategies, rigorous risk
-          management, and global market insight.
+          Family office thing.
         </p>
         <div className="hero-actions">
           <button type="button" className="primary-action" onClick={() => onJump('contact')}>
