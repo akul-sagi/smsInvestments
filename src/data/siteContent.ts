@@ -1,19 +1,18 @@
 import type { LucideIcon } from 'lucide-react';
 import { BarChart3, BriefcaseBusiness, Compass, GraduationCap, ShieldCheck } from 'lucide-react';
 
-export type SectionId = 'landing' | 'about' | 'capabilities' | 'internship' | 'newsletter' | 'contact';
+export type SectionId = 'landing' | 'about' | 'capabilities' | 'newsletter' | 'contact';
 
 export const sections: ReadonlyArray<{ id: SectionId; label: string }> = [
   { id: 'landing', label: 'Landing' },
   { id: 'about', label: 'About' },
   { id: 'capabilities', label: 'Capabilities' },
-  { id: 'internship', label: 'Internship' },
   { id: 'newsletter', label: 'Newsletter' },
   { id: 'contact', label: 'Get in touch' },
 ] as const;
 
-/** Header nav omits Landing and Internship; logo still scrolls to landing. Dot nav uses full `sections` order. */
-export const headerNavSections = sections.filter(({ id }) => id !== 'landing' && id !== 'internship');
+/** Header nav omits Landing; logo still scrolls to landing. Dot nav uses full `sections` order. */
+export const headerNavSections = sections.filter(({ id }) => id !== 'landing');
 
 export const capabilityCards: ReadonlyArray<{
   title: string;

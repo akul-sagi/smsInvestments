@@ -10,6 +10,8 @@ import { sections } from '../data/siteContent';
 const HEADER_CLEARANCE_PX = 80;
 
 const SNAP_IDLE_MS = 140;
+const WHEEL_GESTURE_IDLE_MS = 140;
+const WHEEL_DELTA_THRESHOLD = 10;
 
 /**
  * Scroll `Y` where this panel’s top meets the document scrollport top (sticky stack:
@@ -65,6 +67,20 @@ function directionalSnapPoint(scrollY: number, points: number[], direction: 'up'
   return points[points.length - 1];
 }
 
+function adjacentSnapPoint(scrollY: number, points: number[], direction: 'up' | 'down'): number {
+  if (!points.length) return 0;
+
+  const nearestIndex = points.reduce((nearest, point, i) => {
+    return Math.abs(point - scrollY) < Math.abs(points[nearest] - scrollY) ? i : nearest;
+  }, 0);
+
+  if (direction === 'down') {
+    return points[Math.min(nearestIndex + 1, points.length - 1)];
+  }
+
+  return points[Math.max(nearestIndex - 1, 0)];
+}
+
 function computeActiveSection(): SectionId {
   const scrollY = window.scrollY;
   const trigger = scrollY + HEADER_CLEARANCE_PX;
@@ -88,6 +104,10 @@ export function useSiteNavigation() {
   const snapIdleTimerRef = useRef<number>(0);
   const isSnappingRef = useRef(false);
   const isProgrammaticScrollRef = useRef(false);
+  const wheelGestureIdleTimerRef = useRef<number>(0);
+  const isWheelGestureActiveRef = useRef(false);
+  const hasConsumedWheelGestureRef = useRef(false);
+  const wheelDeltaAccumulatorRef = useRef(0);
   const lastScrollYRef = useRef(0);
   const scrollDeltaRef = useRef(0);
 
@@ -118,6 +138,66 @@ export function useSiteNavigation() {
   }, [prefersReducedMotion]);
 
   useEffect(() => {
+    const releaseWheelGesture = () => {
+      isWheelGestureActiveRef.current = false;
+      hasConsumedWheelGestureRef.current = false;
+      wheelDeltaAccumulatorRef.current = 0;
+    };
+
+    const scheduleWheelGestureRelease = () => {
+      window.clearTimeout(wheelGestureIdleTimerRef.current);
+      wheelGestureIdleTimerRef.current = window.setTimeout(
+        releaseWheelGesture,
+        WHEEL_GESTURE_IDLE_MS,
+      );
+    };
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || Math.abs(event.deltaY) < Math.abs(event.deltaX)) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (!isWheelGestureActiveRef.current) {
+        isWheelGestureActiveRef.current = true;
+        hasConsumedWheelGestureRef.current = false;
+        wheelDeltaAccumulatorRef.current = 0;
+      }
+
+      scheduleWheelGestureRelease();
+      wheelDeltaAccumulatorRef.current += event.deltaY;
+
+      if (hasConsumedWheelGestureRef.current || isProgrammaticScrollRef.current) return;
+
+      if (Math.abs(wheelDeltaAccumulatorRef.current) < WHEEL_DELTA_THRESHOLD) return;
+
+      const points = getPanelSnapPoints();
+      const direction = wheelDeltaAccumulatorRef.current > 0 ? 'down' : 'up';
+      const currentY = window.scrollY;
+      const targetY = adjacentSnapPoint(currentY, points, direction);
+      wheelDeltaAccumulatorRef.current = 0;
+
+      if (Math.abs(currentY - targetY) <= 1) return;
+
+      window.clearTimeout(snapIdleTimerRef.current);
+      scrollDeltaRef.current = 0;
+      isSnappingRef.current = true;
+      hasConsumedWheelGestureRef.current = true;
+
+      window.scrollTo({
+        top: targetY,
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      });
+
+      window.setTimeout(
+        () => {
+          isSnappingRef.current = false;
+        },
+        prefersReducedMotion ? 0 : 420,
+      );
+    };
+
     const updateFromScroll = () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(maxScroll > 0 ? window.scrollY / maxScroll : 0);
@@ -135,7 +215,7 @@ export function useSiteNavigation() {
         updateFromScroll();
       });
 
-      if (isSnappingRef.current || isProgrammaticScrollRef.current) return;
+      if (isSnappingRef.current || isProgrammaticScrollRef.current || isWheelGestureActiveRef.current) return;
 
       window.clearTimeout(snapIdleTimerRef.current);
       snapIdleTimerRef.current = window.setTimeout(snapToDirectionalPanel, SNAP_IDLE_MS);
@@ -143,11 +223,16 @@ export function useSiteNavigation() {
 
     const onScrollEnd = () => {
       window.clearTimeout(snapIdleTimerRef.current);
+      if (isWheelGestureActiveRef.current) {
+        scrollDeltaRef.current = 0;
+        return;
+      }
       snapToDirectionalPanel();
     };
 
     updateFromScroll();
     lastScrollYRef.current = window.scrollY;
+    window.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('scrollend', onScrollEnd, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
@@ -155,6 +240,8 @@ export function useSiteNavigation() {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.clearTimeout(snapIdleTimerRef.current);
+      window.clearTimeout(wheelGestureIdleTimerRef.current);
+      window.removeEventListener('wheel', onWheel);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('scrollend', onScrollEnd);
       window.removeEventListener('resize', onScroll);

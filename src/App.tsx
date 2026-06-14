@@ -5,7 +5,6 @@ import { ContactSection } from './components/ContactSection';
 import { DotNav } from './components/DotNav';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
-import { InternshipSection } from './components/InternshipSection';
 import { NewsletterSection } from './components/NewsletterSection';
 
 export default function App() {
