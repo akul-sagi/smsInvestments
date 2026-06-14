@@ -5,7 +5,8 @@ import { ContactSection } from './components/ContactSection';
 import { DotNav } from './components/DotNav';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
-import { PhilosophySection } from './components/PhilosophySection';
+import { InternshipSection } from './components/InternshipSection';
+import { NewsletterSection } from './components/NewsletterSection';
 
 export default function App() {
   const { activeSection, scrollProgress, jumpTo, prefersReducedMotion } = useSiteNavigation();
@@ -20,7 +21,7 @@ export default function App() {
         <HeroSection scrollProgress={scrollProgress} onJump={jumpTo} prefersReducedMotion={reduceMotion} />
         <AboutSection prefersReducedMotion={reduceMotion} />
         <CapabilitiesSection prefersReducedMotion={reduceMotion} />
-        <PhilosophySection  prefersReducedMotion={reduceMotion} />
+        <NewsletterSection prefersReducedMotion={reduceMotion} />
         <ContactSection prefersReducedMotion={reduceMotion} />
       </main>
     </div>

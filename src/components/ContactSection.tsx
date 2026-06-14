@@ -8,6 +8,7 @@ import {
   emailJsTemplateId,
   isEmailJsConfigured,
 } from '../config/email';
+import { contactDetails } from '../data/siteContent';
 import { SectionFrame } from './SectionFrame';
 
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
@@ -29,9 +30,7 @@ export function ContactSection({ prefersReducedMotion }: ContactSectionProps) {
 
     if (!configured || !formRef.current) {
       setStatus('error');
-      setMessage(
-        'Email is not configured for this deployment. Set VITE_EMAILJS_* and VITE_CONTACT_TO_EMAIL, then rebuild.',
-      );
+      setMessage('Email is not configured for this deployment.');
       return;
     }
 
@@ -58,38 +57,53 @@ export function ContactSection({ prefersReducedMotion }: ContactSectionProps) {
   };
 
   return (
-    <SectionFrame
-      id="contact"
-      kicker=""
-      title="Contact Us"
-      prefersReducedMotion={prefersReducedMotion}
-    >
+    <SectionFrame id="contact" kicker="" title="Contact Us" prefersReducedMotion={prefersReducedMotion}>
       <div className="contact-layout">
+        <div className="contact-info">
+          <section aria-labelledby="contact-address-title">
+            <h3 id="contact-address-title">Address</h3>
+            <div className="address-grid">
+              <p>{contactDetails.ukAddress.map((line) => <span key={line}>{line}</span>)}</p>
+              <p>{contactDetails.indiaAddress.map((line) => <span key={line}>{line}</span>)}</p>
+            </div>
+          </section>
+
+          <section aria-labelledby="contact-details-title">
+            <h3 id="contact-details-title">Contact</h3>
+            <p className="contact-links">
+              <a href={`tel:${contactDetails.phone.replaceAll(' ', '')}`}>{contactDetails.phone}</a>
+              <a href={`mailto:${contactDetails.email}`}>{contactDetails.email}</a>
+            </p>
+          </section>
+
+          <iframe
+            className="contact-map"
+            title="Map view of London office"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(contactDetails.ukMapQuery)}&z=15&output=embed`}
+          />
+        </div>
+
         <form className="contact-form" ref={formRef} onSubmit={handleSubmit} aria-busy={status === 'loading'}>
           <input type="hidden" name="to_email" value={contactToEmail} />
-          <label htmlFor="contact-first-name">
-            First name
-            <input id="contact-first-name" name="first_name" type="text" autoComplete="given-name" required />
-          </label>
-          <label htmlFor="contact-last-name">
-            Last name
-            <input id="contact-last-name" name="last_name" type="text" autoComplete="family-name" required />
+          <input type="hidden" name="subject" value="SMS Investments website enquiry" />
+          <h3>Contact Form</h3>
+          <label htmlFor="contact-name">
+            Name
+            <input id="contact-name" name="from_name" type="text" autoComplete="name" required />
           </label>
           <label htmlFor="contact-email">
-            Email
+            Email address
             <input id="contact-email" name="reply_to" type="email" autoComplete="email" required />
           </label>
-          <label htmlFor="contact-subject">
-            Subject
-            <input id="contact-subject" name="subject" type="text" required />
+          <label htmlFor="contact-message">
+            Leave a message
+            <textarea id="contact-message" name="message" rows={2} required />
           </label>
-          <label className="full" htmlFor="contact-message">
-            Type your message here
-            <textarea id="contact-message" name="message" rows={4} required />
-          </label>
-          <label className="file-input full" htmlFor="contact-attachment">
+          <label className="file-input" htmlFor="contact-attachment">
             <span className="file-input-label">
-              <Upload size={18} aria-hidden="true" />
+              <Upload size={16} aria-hidden="true" />
               Upload file
             </span>
             <input
@@ -99,28 +113,17 @@ export function ContactSection({ prefersReducedMotion }: ContactSectionProps) {
               accept="image/*,.pdf,.doc,.docx,.txt,.rtf"
             />
           </label>
-          <button className="primary-action full submit-button" type="submit" disabled={status === 'loading'}>
-            <Send size={18} aria-hidden="true" />
-            {status === 'loading' ? 'Sending…' : 'Submit'}
+          <button className="primary-action submit-button" type="submit" disabled={status === 'loading'}>
+            <Send size={16} aria-hidden="true" />
+            {status === 'loading' ? 'Sending...' : 'Submit'}
           </button>
+          <small>Never submit passwords.</small>
           {message ? (
             <p id="contact-form-status" className={`form-status ${status}`} role="status" aria-live="polite">
               {message}
             </p>
           ) : null}
         </form>
-
-        <aside className="contact-qr-aside" aria-label="WhatsApp">
-          <img
-            src="/assets/qr-code.png"
-            alt="QR code to join the SMS Investments WhatsApp group"
-            width={200}
-            height={200}
-            loading="lazy"
-            decoding="async"
-          />
-          <p>Scan to join our WhatsApp group.</p>
-        </aside>
       </div>
     </SectionFrame>
   );

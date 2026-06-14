@@ -8,6 +8,7 @@ type SectionFrameProps = {
   title: string;
   children: ReactNode;
   compact?: boolean;
+  hideTitle?: boolean;
   prefersReducedMotion: boolean;
 };
 
@@ -17,6 +18,7 @@ export function SectionFrame({
   title,
   children,
   compact = false,
+  hideTitle = false,
   prefersReducedMotion,
 }: SectionFrameProps) {
   return (
@@ -35,7 +37,7 @@ export function SectionFrame({
         }
       >
         <p className="eyebrow">{kicker}</p>
-        <h2 id={`${id}-title`}>{title}</h2>
+        {!hideTitle ? <h2 id={`${id}-title`}>{title}</h2> : null}
         {children}
       </motion.div>
     </section>

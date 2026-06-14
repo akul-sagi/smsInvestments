@@ -32,12 +32,10 @@ export function HeroSection({ scrollProgress, onJump, prefersReducedMotion }: He
         animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p className="eyebrow">London capital markets office</p>
+        <p className="hero-kicker">Single-family office</p>
         <h1 id="landing-title">SMS Investments</h1>
-        <p className="hero-copy">
-          A single family office deploying proprietary capital through disciplined momentum strategies, rigorous risk
-          management, and global market insight.
-        </p>
+        <p className="hero-title">Innovative Strategies</p>
+        <p className="hero-tagline">In the progress of others, lies our own</p>
         <div className="hero-actions">
           <button type="button" className="primary-action" onClick={() => onJump('contact')}>
             <Mail size={18} aria-hidden="true" />
