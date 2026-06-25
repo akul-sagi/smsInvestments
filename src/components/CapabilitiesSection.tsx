@@ -20,10 +20,23 @@ function getCircularOffset(index: number, activeIndex: number, total: number) {
 export function CapabilitiesSection({ prefersReducedMotion }: CapabilitiesSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   const activeCard = capabilityCards[activeIndex];
-  const springTransition = prefersReducedMotion
+  const cardTransition = prefersReducedMotion
     ? { duration: 0 }
+    : isMobileView
+      ? { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const }
     : { type: 'spring' as const, stiffness: 210, damping: 26 };
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 900px)');
+    const updateMobileView = () => setIsMobileView(mediaQuery.matches);
+
+    updateMobileView();
+    mediaQuery.addEventListener('change', updateMobileView);
+
+    return () => mediaQuery.removeEventListener('change', updateMobileView);
+  }, []);
 
   useEffect(() => {
     if (prefersReducedMotion || isPaused) return undefined;
@@ -90,7 +103,7 @@ export function CapabilitiesSection({ prefersReducedMotion }: CapabilitiesSectio
                 const offset = getCircularOffset(index, activeIndex, cardCount);
                 const distance = Math.abs(offset);
                 const isActive = offset === 0;
-                const isVisible = distance <= 1;
+                const isVisible = isMobileView ? isActive : distance <= 1;
 
                 return (
                   <motion.button
@@ -104,14 +117,14 @@ export function CapabilitiesSection({ prefersReducedMotion }: CapabilitiesSectio
                     tabIndex={isVisible ? 0 : -1}
                     style={{ pointerEvents: isVisible ? 'auto' : 'none' }}
                     animate={{
-                      x: `calc(-50% + ${offset * 92}px)`,
-                      y: isActive ? 0 : 12,
-                      scale: isActive ? 1 : 0.93,
-                      minHeight: isActive ? 252 : 212,
+                      x: isMobileView ? '-50%' : `calc(-50% + ${offset * 92}px)`,
+                      y: isMobileView ? 0 : isActive ? 0 : 12,
+                      scale: isMobileView ? 1 : isActive ? 1 : 0.93,
+                      minHeight: isMobileView ? 224 : isActive ? 252 : 212,
                       opacity: isVisible ? (isActive ? 1 : 0.88) : 0,
                       zIndex: isActive ? 12 : offset === -1 ? 10 : 11,
                     }}
-                    transition={springTransition}
+                    transition={cardTransition}
                   >
                     {isActive ? (
                       <div className="carousel-card-body">

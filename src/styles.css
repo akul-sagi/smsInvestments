@@ -1041,13 +1041,15 @@ p {
   }
 
   h2 {
-    font-size: clamp(3.25rem, 15vw, 5rem);
+    font-size: clamp(2.65rem, 12vw, 4.6rem);
     line-height: 0.88;
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow-wrap: normal;
   }
 
   .about-title {
-    font-size: clamp(3.25rem, 15vw, 5rem);
+    font-size: clamp(2.65rem, 12vw, 4.6rem);
+    white-space: nowrap;
   }
 
   .about-layout,
@@ -1104,7 +1106,7 @@ p {
 
   #capabilities h2 {
     margin-bottom: 14px;
-    font-size: clamp(3rem, 14vw, 4.9rem);
+    font-size: clamp(2.4rem, 11vw, 4.25rem);
   }
 
   .capability-carousel {
@@ -1115,13 +1117,18 @@ p {
 
   .carousel-stage {
     position: relative;
+    justify-content: center;
     min-height: auto;
     padding-inline: 56px;
   }
 
-  .carousel-stack-wrap,
+  .carousel-stack-wrap {
+    width: min(100%, 430px);
+    min-height: 224px;
+  }
+
   .carousel-stack {
-    width: 100%;
+    width: min(100%, 430px);
     min-height: 224px;
   }
 
@@ -1167,6 +1174,13 @@ p {
     font-size: clamp(1.75rem, 8vw, 2.35rem);
   }
 
+  #newsletter.content-panel {
+    min-height: 100svh;
+    align-items: flex-start;
+    padding-top: 92px;
+    padding-bottom: 64px;
+  }
+
   .newsletter-grid {
     display: flex;
     gap: 16px;
@@ -1210,6 +1224,13 @@ p {
 
   #contact .section-inner {
     max-height: none;
+  }
+
+  #contact.content-panel {
+    min-height: 100svh;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 92px;
   }
 
   .contact-layout {
@@ -1316,8 +1337,8 @@ p {
   }
 
   .hero-title {
-    font-size: clamp(3.2rem, 15vw, 4.5rem);
-    white-space: normal;
+    font-size: clamp(2.4rem, 11vw, 4rem);
+    white-space: nowrap;
   }
 
   .hero-tagline {
@@ -1332,7 +1353,8 @@ p {
 
   .about-title,
   h2 {
-    font-size: clamp(3.15rem, 18vw, 4.5rem);
+    font-size: clamp(2.35rem, 12.5vw, 3.95rem);
+    white-space: nowrap;
   }
 
   .about-text {
@@ -1354,15 +1376,15 @@ p {
   .carousel-stage {
     gap: 0;
     min-height: auto;
-    padding-inline: 46px;
+    padding-inline: 44px;
   }
 
   .carousel-stack-wrap {
-    width: 100%;
+    width: min(100%, 320px);
   }
 
   .carousel-stack {
-    width: 100%;
+    width: min(100%, 320px);
     min-height: 218px;
   }
 
@@ -1392,6 +1414,12 @@ p {
     line-height: 1.45;
   }
 
+  #newsletter.content-panel {
+    min-height: 100svh;
+    padding-top: 88px;
+    padding-bottom: 58px;
+  }
+
   .newsletter-grid {
     gap: 14px;
     margin-inline: -12px;
@@ -1408,14 +1436,18 @@ p {
   }
 
   #contact.content-panel {
+    min-height: 100svh;
+    align-items: flex-start;
+    justify-content: flex-start;
     padding-top: 84px;
     padding-bottom: max(42px, env(safe-area-inset-bottom));
   }
 
   #contact h2 {
     margin-bottom: 8px;
-    font-size: clamp(2.55rem, 14vw, 3.55rem);
+    font-size: clamp(2.25rem, 12vw, 3.2rem);
     line-height: 0.86;
+    white-space: nowrap;
   }
 
   #contact .contact-layout {
