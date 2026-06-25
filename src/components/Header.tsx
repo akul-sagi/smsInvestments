@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Menu, X } from 'lucide-react';
 import type { SectionId } from '../data/siteContent';
 import { headerNavSections } from '../data/siteContent';
 
@@ -79,7 +78,11 @@ export function Header({ activeSection, onJump }: HeaderProps) {
           aria-controls="primary-nav"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? <X size={22} strokeWidth={2} aria-hidden="true" /> : <Menu size={22} strokeWidth={2} aria-hidden="true" />}
+          <span className="hamburger-lines" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
           <span className="visually-hidden">{menuOpen ? 'Close menu' : 'Open menu'}</span>
         </button>
       </div>

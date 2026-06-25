@@ -59,7 +59,7 @@ export function ContactSection({ prefersReducedMotion }: ContactSectionProps) {
   return (
     <SectionFrame id="contact" kicker="" title="Contact Us" prefersReducedMotion={prefersReducedMotion}>
       <div className="contact-layout">
-        <div className="contact-info">
+        <div className="contact-info contact-info--desktop">
           <section aria-labelledby="contact-address-title">
             <h3 id="contact-address-title">Address</h3>
             <div className="address-grid">
@@ -124,6 +124,38 @@ export function ContactSection({ prefersReducedMotion }: ContactSectionProps) {
             </p>
           ) : null}
         </form>
+
+        <div className="contact-info contact-info--mobile">
+          <section aria-labelledby="contact-uk-address-title">
+            <h3 id="contact-uk-address-title">UK</h3>
+            <p>{contactDetails.ukAddress.slice(1).map((line) => <span key={line}>{line}</span>)}</p>
+          </section>
+
+          <section aria-labelledby="contact-india-address-title">
+            <h3 id="contact-india-address-title">India</h3>
+            <p>{contactDetails.indiaAddress.slice(1).map((line) => <span key={line}>{line}</span>)}</p>
+          </section>
+
+          <section aria-labelledby="contact-details-title">
+            <h3 id="contact-details-title">Contact</h3>
+            <p className="contact-links">
+              <a href={`tel:${contactDetails.phone.replaceAll(' ', '')}`}>{contactDetails.phone}</a>
+              <a href={`mailto:${contactDetails.email}`}>{contactDetails.email}</a>
+            </p>
+          </section>
+
+          <section aria-labelledby="contact-map-title">
+            <h3 id="contact-map-title">Map</h3>
+            <a
+              className="maps-action"
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactDetails.ukMapQuery)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in maps
+            </a>
+          </section>
+        </div>
       </div>
     </SectionFrame>
   );
